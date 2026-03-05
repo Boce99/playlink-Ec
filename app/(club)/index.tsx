@@ -286,6 +286,22 @@ export default function ClubDashboardScreen() {
       color: '#FF5722',
       route: '/(club)/staff',
     },
+    {
+      title: 'Notificaciones',
+      description: 'Enviar notificaciones a miembros',
+      icon: 'notifications',
+      iosIcon: 'bell.fill',
+      color: '#FF9800',
+      route: '/(club)/notifications',
+    },
+    {
+      title: 'Configuración',
+      description: 'Editar información del club',
+      icon: 'settings',
+      iosIcon: 'gear',
+      color: '#607D8B',
+      route: '/(club)/settings',
+    },
   ];
 
   if (loading) {

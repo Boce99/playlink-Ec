@@ -152,7 +152,19 @@ export const playerAPI = {
     role: string;
   }>>("/api/user/clubs"),
 
-  joinClub: (clubId: string) => authenticatedPost<{ success: boolean; membership: any }>(`/api/user/clubs/${clubId}/join`),
+  // Club Discovery
+  discoverClubs: () => authenticatedGet<Array<{
+    id: string;
+    name: string;
+    address?: string;
+    phone?: string;
+    email?: string;
+    memberCount: number;
+    courtsCount: number;
+    activeTournamentsCount: number;
+  }>>("/api/clubs/discover"),
+
+  joinClub: (clubId: string) => authenticatedPost<{ success: boolean; membership: any }>(`/api/clubs/${clubId}/join`),
 
   // Bookings
   getBookings: () => authenticatedGet<Array<{
@@ -240,6 +252,19 @@ export const clubAPI = {
     recentActivity: Array<{ type: string; description: string; timestamp: string }>;
   }>("/api/club/dashboard"),
 
+  // Club Info Management
+  getClubInfo: () => authenticatedGet<{
+    id: string;
+    name: string;
+    address: string;
+    phone: string;
+    email: string;
+    createdAt: string;
+  }>("/api/club/info"),
+
+  updateClubInfo: (data: { name?: string; address?: string; phone?: string; email?: string }) =>
+    authenticatedPut<any>("/api/club/info", data),
+
   // Courts
   getCourts: () => authenticatedGet<Array<{
     id: string;
@@ -315,6 +340,12 @@ export const clubAPI = {
   updateTournamentRequest: (tournamentId: string, requestId: string, status: string) => 
     authenticatedPut<any>(`/api/club/tournaments/${tournamentId}/requests/${requestId}`, { status }),
 
+  closeRegistration: (tournamentId: string) =>
+    authenticatedPost<{ success: boolean; matchesCreated: number; bracket: any[] }>(
+      `/api/club/tournaments/${tournamentId}/close-registration`,
+      {}
+    ),
+
   // Players
   getPlayers: () => authenticatedGet<Array<{
     id: string;
@@ -345,6 +376,20 @@ export const clubAPI = {
   // QR Validation
   validateQR: (qrCode: string) => authenticatedPost<{
     success: boolean;
-    booking: { id: string; userName: string; courtName: string; startTime: string };
+    booking?: { id: string; userName: string; courtName: string; bookingDate: string; startTime: string; endTime: string; status: string };
+    error?: string;
   }>("/api/qr/validate", { qrCode }),
+
+  // Notifications
+  sendNotification: (data: { title: string; body: string; recipientType: 'all' | 'players' | 'staff' }) =>
+    authenticatedPost<{ success: boolean; notificationsSent: number }>("/api/club/notifications/send", data),
+
+  getNotificationHistory: () => authenticatedGet<Array<{
+    id: string;
+    title: string;
+    body: string;
+    recipientType: string;
+    sentAt: string;
+    recipientCount: number;
+  }>>("/api/club/notifications/history"),
 };

@@ -324,9 +324,16 @@ export default function HomeScreen() {
 
         {/* My Clubs */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors[colorScheme ?? 'light'].text }]}>
-            Mis Clubes
-          </Text>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: colors[colorScheme ?? 'light'].text }]}>
+              Mis Clubes
+            </Text>
+            <TouchableOpacity onPress={() => router.push('/clubs/discover')}>
+              <Text style={[styles.seeAllText, { color: colors[colorScheme ?? 'light'].primary }]}>
+                Descubrir
+              </Text>
+            </TouchableOpacity>
+          </View>
           {clubs.length === 0 ? (
             <View style={[styles.emptyCard, { backgroundColor: colors[colorScheme ?? 'light'].card }]}>
               <IconSymbol
@@ -338,6 +345,12 @@ export default function HomeScreen() {
               <Text style={[styles.emptyText, { color: colors[colorScheme ?? 'light'].textSecondary }]}>
                 No perteneces a ningún club
               </Text>
+              <TouchableOpacity
+                style={[styles.emptyButton, { backgroundColor: colors[colorScheme ?? 'light'].primary }]}
+                onPress={() => router.push('/clubs/discover')}
+              >
+                <Text style={styles.emptyButtonText}>Descubrir clubes</Text>
+              </TouchableOpacity>
             </View>
           ) : (
             clubs.map((club) => (

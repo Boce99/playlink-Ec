@@ -349,11 +349,16 @@ export default function ClubTournamentsScreen() {
 
   const handleCloseRegistration = async (tournamentId: string) => {
     try {
-      console.log('Closing registration for tournament:', tournamentId);
-      // TODO: Backend Integration - POST /api/club/tournaments/:id/close-registration
-      loadTournaments();
-    } catch (error) {
-      console.error('Error closing registration:', error);
+      console.log('ClubTournamentsScreen: Closing registration for tournament:', tournamentId);
+      setLoading(true);
+      // TODO: Backend Integration - POST /api/club/tournaments/:tournamentId/close-registration
+      // Changes tournament status to 'in_progress' and generates bracket/matches
+      // Returns: { success: true, matchesCreated: number, bracket: [...] }
+      await loadTournaments();
+    } catch (error: any) {
+      console.error('ClubTournamentsScreen: Error closing registration:', error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
