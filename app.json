@@ -5,13 +5,13 @@
     "slug": "playlink-ec",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/app-icon-ykf.png",
+    "icon": "./assets/images/efdb3d46-d228-453c-bd96-dbf9f66de36c.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/app-icon-ykf.png",
+      "image": "./assets/images/efdb3d46-d228-453c-bd96-dbf9f66de36c.png",
       "resizeMode": "contain",
-      "backgroundColor": "#10B981"
+      "backgroundColor": "#4A9BF0"
     },
     "ios": {
       "supportsTablet": true,
@@ -22,14 +22,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/app-icon-ykf.png",
-        "backgroundColor": "#10B981"
+        "foregroundImage": "./assets/images/efdb3d46-d228-453c-bd96-dbf9f66de36c.png",
+        "backgroundColor": "#4A9BF0"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.playlink.ec"
     },
     "web": {
-      "favicon": "./assets/images/final_quest_240x240.png",
+      "favicon": "./assets/images/efdb3d46-d228-453c-bd96-dbf9f66de36c.png",
       "bundler": "metro"
     },
     "plugins": [

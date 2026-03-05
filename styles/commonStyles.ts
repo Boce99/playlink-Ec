@@ -1,36 +1,41 @@
 
 import { StyleSheet } from 'react-native';
 
-// PlayLink Ec - Padel Club Theme
-// Sporty, energetic colors inspired by padel courts
+// PlayLink Ec - Brand Colors
+// Primary: PL Blue (#4A9BF0)
+// Secondary: PL Black (#000000), Dark Gray (#333333), Light Gray (#EEEEEE)
 export const colors = {
   // Light theme
   light: {
-    background: '#F8FAFB',
+    background: '#FFFFFF',
     card: '#FFFFFF',
-    text: '#1A1A1A',
-    textSecondary: '#6B7280',
-    primary: '#10B981', // Vibrant green (padel court color)
-    secondary: '#3B82F6', // Bright blue
-    accent: '#F59E0B', // Orange accent
-    highlight: '#ECFDF5', // Light green highlight
-    border: '#E5E7EB',
+    text: '#000000',
+    textSecondary: '#333333',
+    primary: '#4A9BF0', // PL Blue
+    secondary: '#000000', // PL Black
+    accent: '#4A9BF0', // PL Blue accent
+    highlight: '#E8F4FD', // Light blue highlight
+    border: '#EEEEEE',
     error: '#EF4444',
     success: '#10B981',
+    lightGray: '#EEEEEE',
+    darkGray: '#333333',
   },
   // Dark theme
   dark: {
-    background: '#0F172A',
-    card: '#1E293B',
-    text: '#F1F5F9',
-    textSecondary: '#94A3B8',
-    primary: '#10B981',
-    secondary: '#3B82F6',
-    accent: '#F59E0B',
-    highlight: '#064E3B',
-    border: '#334155',
+    background: '#000000',
+    card: '#1A1A1A',
+    text: '#FFFFFF',
+    textSecondary: '#EEEEEE',
+    primary: '#4A9BF0', // PL Blue
+    secondary: '#FFFFFF', // White for dark mode
+    accent: '#4A9BF0', // PL Blue accent
+    highlight: '#1A3A52',
+    border: '#333333',
     error: '#EF4444',
     success: '#10B981',
+    lightGray: '#333333',
+    darkGray: '#EEEEEE',
   },
 };
 

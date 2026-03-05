@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "expo-router";
+import { PlayLinkLogo } from "@/components/PlayLinkLogo";
 
 type Mode = "signin" | "signup";
 type UserType = "player" | "club";
@@ -33,7 +34,7 @@ export default function AuthScreen() {
   if (authLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4CAF50" />
+        <ActivityIndicator size="large" color="#4A9BF0" />
       </View>
     );
   }
@@ -48,8 +49,6 @@ export default function AuthScreen() {
     try {
       if (mode === "signin") {
         await signInWithEmail(email, password);
-        // TODO: Backend Integration - GET /api/user/profile to fetch user role
-        // For now, redirect based on selected userType
         if (userType === "club") {
           router.replace("/(club)");
         } else {
@@ -57,7 +56,6 @@ export default function AuthScreen() {
         }
       } else {
         await signUpWithEmail(email, password, name);
-        // TODO: Backend Integration - POST /api/auth/register with { email, password, name, role: userType }
         Alert.alert(
           "Éxito",
           "¡Cuenta creada! Por favor verifica tu email."
@@ -85,8 +83,6 @@ export default function AuthScreen() {
       } else if (provider === "github") {
         await signInWithGitHub();
       }
-      // TODO: Backend Integration - GET /api/user/profile to fetch user role
-      // For now, redirect based on selected userType
       if (userType === "club") {
         router.replace("/(club)");
       } else {
@@ -106,7 +102,7 @@ export default function AuthScreen() {
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
-          <Text style={styles.logo}>PlayLink Ec</Text>
+          <PlayLinkLogo size={140} variant="full" />
           <Text style={styles.subtitle}>Gestión de Clubes de Pádel</Text>
 
           <View style={styles.userTypeContainer}>
@@ -252,25 +248,19 @@ const styles = StyleSheet.create({
     padding: 24,
     justifyContent: "center",
   },
-  logo: {
-    fontSize: 36,
-    fontWeight: "bold",
-    marginBottom: 8,
-    textAlign: "center",
-    color: "#4CAF50",
-  },
   subtitle: {
     fontSize: 16,
     marginBottom: 32,
+    marginTop: 16,
     textAlign: "center",
-    color: "#666",
+    color: "#333333",
   },
   userTypeContainer: {
     flexDirection: "row",
     marginBottom: 24,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: "#EEEEEE",
     overflow: "hidden",
   },
   userTypeButton: {
@@ -280,12 +270,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   userTypeButtonActive: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#4A9BF0",
   },
   userTypeText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#666",
+    color: "#333333",
   },
   userTypeTextActive: {
     color: "#fff",
@@ -295,12 +285,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 24,
     textAlign: "center",
-    color: "#000",
+    color: "#000000",
   },
   input: {
     height: 50,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: "#EEEEEE",
     borderRadius: 8,
     paddingHorizontal: 16,
     marginBottom: 16,
@@ -309,7 +299,7 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     height: 50,
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#4A9BF0",
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
@@ -328,7 +318,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   switchModeText: {
-    color: "#4CAF50",
+    color: "#4A9BF0",
     fontSize: 14,
   },
   divider: {
@@ -339,17 +329,17 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: "#ddd",
+    backgroundColor: "#EEEEEE",
   },
   dividerText: {
     marginHorizontal: 12,
-    color: "#666",
+    color: "#333333",
     fontSize: 14,
   },
   socialButton: {
     height: 50,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: "#EEEEEE",
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
@@ -358,12 +348,12 @@ const styles = StyleSheet.create({
   },
   socialButtonText: {
     fontSize: 16,
-    color: "#000",
+    color: "#000000",
     fontWeight: "500",
   },
   appleButton: {
-    backgroundColor: "#000",
-    borderColor: "#000",
+    backgroundColor: "#000000",
+    borderColor: "#000000",
   },
   appleButtonText: {
     color: "#fff",

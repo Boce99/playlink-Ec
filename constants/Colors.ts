@@ -1,5 +1,12 @@
-const tintColorLight = "#0a7ea4";
-const tintColorDark = "#fff";
+
+// PlayLink Ec Brand Colors
+const plBlue = "#4A9BF0";
+const plBlack = "#000000";
+const plDarkGray = "#333333";
+const plLightGray = "#EEEEEE";
+
+const tintColorLight = plBlue;
+const tintColorDark = plBlue;
 
 export const zincColors = {
   50: "#fafafa",
@@ -15,26 +22,26 @@ export const zincColors = {
   950: "#09090b",
 };
 
-export const appleBlue = "#007AFF";
+export const appleBlue = plBlue;
 export const appleRed = "#FF3B30";
 
 export const borderColor = "#A1A1AA80";
 export const appleGreen = "#34C759";
 export const Colors = {
   light: {
-    text: "#11181C",
+    text: plBlack,
     background: "#fff",
     tint: tintColorLight,
-    icon: "#687076",
-    tabIconDefault: "#687076",
+    icon: plDarkGray,
+    tabIconDefault: plDarkGray,
     tabIconSelected: tintColorLight,
   },
   dark: {
-    text: "#ECEDEE",
-    background: "#151718",
+    text: "#FFFFFF",
+    background: plBlack,
     tint: tintColorDark,
-    icon: "#9BA1A6",
-    tabIconDefault: "#9BA1A6",
+    icon: plLightGray,
+    tabIconDefault: plLightGray,
     tabIconSelected: tintColorDark,
   },
 };
