@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "PlayLink Ec",
+    "name": "nombre-de-app-playli",
     "slug": "nombre-de-app-playli-urognu",
     "version": "1.0.1",
     "orientation": "portrait",
@@ -37,13 +37,13 @@
       "expo-router",
       "expo-web-browser"
     ],
-    "scheme": "playlink",
+    "scheme": "nombredeappplayli",
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
       "router": {},
-      "backendUrl": "https://prod-proj-4b8flnbb6dmtf8zl23ruj-liwg5h36mq-ey.a.run.app"
+      "backendUrl": "https://zvazu5zqp6uvvbjbnq5jarxtr77798b3.app.specular.dev"
     }
   }
 }
