@@ -1,10 +1,10 @@
 
-import { BEARER_TOKEN_KEY } from "@/lib/auth";
 import Constants from "expo-constants";
-import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
+import * as SecureStore from "expo-secure-store";
+import { BEARER_TOKEN_KEY } from "@/lib/auth";
 
-const API_URL = Constants.expoConfig?.extra?.backendUrl || "http://localhost:3000";
+const API_URL = Constants.expoConfig?.extra?.backendUrl || "https://wc23hvzw89jmf7jv5qsgb83jft54us7u.app.specular.dev";
 
 async function getAuthToken(): Promise<string | null> {
   try {
@@ -13,7 +13,7 @@ async function getAuthToken(): Promise<string | null> {
     }
     return await SecureStore.getItemAsync(BEARER_TOKEN_KEY);
   } catch (error) {
-    console.error("Error getting auth token:", error);
+    console.error("[API] Error getting auth token:", error);
     return null;
   }
 }
@@ -23,7 +23,7 @@ async function apiRequest<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const url = `${API_URL}${endpoint}`;
-  console.log(`API Request: ${options.method || "GET"} ${url}`);
+  console.log(`[API] ${options.method || "GET"} ${url}`);
 
   try {
     const response = await fetch(url, {
@@ -33,7 +33,7 @@ async function apiRequest<T>(
       },
     });
 
-    console.log(`API Response: ${response.status} ${response.statusText}`);
+    console.log(`[API] Response: ${response.status} ${response.statusText}`);
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
@@ -43,7 +43,7 @@ async function apiRequest<T>(
     const data = await response.json();
     return data;
   } catch (error: any) {
-    console.error(`API Error for ${endpoint}:`, error.message);
+    console.error(`[API] Error for ${endpoint}:`, error.message);
     throw error;
   }
 }
@@ -66,7 +66,6 @@ async function authenticatedRequest<T>(
   });
 }
 
-// Public API methods
 export async function apiGet<T>(endpoint: string): Promise<T> {
   return apiRequest<T>(endpoint, { method: "GET" });
 }
@@ -79,7 +78,6 @@ export async function apiPost<T>(endpoint: string, data?: any): Promise<T> {
   });
 }
 
-// Authenticated API methods
 export async function authenticatedGet<T>(endpoint: string): Promise<T> {
   return authenticatedRequest<T>(endpoint, { method: "GET" });
 }
@@ -107,7 +105,7 @@ export async function authenticatedDelete<T>(endpoint: string): Promise<T> {
   }
 
   const url = `${API_URL}${endpoint}`;
-  console.log(`API Request: DELETE ${url}`);
+  console.log(`[API] DELETE ${url}`);
 
   try {
     const response = await fetch(url, {
@@ -117,7 +115,7 @@ export async function authenticatedDelete<T>(endpoint: string): Promise<T> {
       },
     });
 
-    console.log(`API Response: ${response.status} ${response.statusText}`);
+    console.log(`[API] Response: ${response.status} ${response.statusText}`);
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
@@ -127,15 +125,25 @@ export async function authenticatedDelete<T>(endpoint: string): Promise<T> {
     const data = await response.json();
     return data;
   } catch (error: any) {
-    console.error(`API Error for ${endpoint}:`, error.message);
+    console.error(`[API] Error for ${endpoint}:`, error.message);
     throw error;
   }
 }
 
-// Player API endpoints
+export const userAPI = {
+  getMe: () => authenticatedGet<{
+    id: string;
+    name: string;
+    email: string;
+    image: string | null;
+    emailVerified: boolean;
+    createdAt: string;
+    updatedAt: string;
+  }>("/api/users/me"),
+};
+
 export const playerAPI = {
-  // Club Discovery & Membership
-  discoverClubs: () => authenticatedGet<Array<{
+  discoverClubs: () => authenticatedGet<{
     id: string;
     name: string;
     address?: string;
@@ -144,23 +152,22 @@ export const playerAPI = {
     memberCount: number;
     courtsCount: number;
     activeTournamentsCount: number;
-  }>>("/api/player/clubs/discover"),
+  }[]>("/api/player/clubs/discover"),
 
   joinClub: (clubId: string) => authenticatedPost<{ success: boolean }>("/api/player/clubs/join", { clubId }),
 
-  getClubs: () => authenticatedGet<Array<{
+  getClubs: () => authenticatedGet<{
     id: string;
     name: string;
     address?: string;
     phone?: string;
     email?: string;
     role: string;
-  }>>("/api/player/clubs"),
+  }[]>("/api/player/clubs"),
 
-  // Bookings
   getBookings: (filter?: 'upcoming' | 'past') => {
     const endpoint = filter ? `/api/player/bookings?filter=${filter}` : "/api/player/bookings";
-    return authenticatedGet<Array<{
+    return authenticatedGet<{
       id: string;
       clubName: string;
       courtName: string;
@@ -170,7 +177,7 @@ export const playerAPI = {
       status: string;
       qrCode: string;
       createdAt: string;
-    }>>(endpoint);
+    }[]>(endpoint);
   },
 
   getBookingDetails: (bookingId: string) => authenticatedGet<{
@@ -205,27 +212,26 @@ export const playerAPI = {
 
   cancelBooking: (bookingId: string) => authenticatedDelete<{ success: boolean }>(`/api/player/bookings/${bookingId}`),
 
-  getCourts: (clubId: string) => authenticatedGet<Array<{
+  getCourts: (clubId: string) => authenticatedGet<{
     id: string;
     name: string;
     isAvailable: boolean;
-  }>>(`/api/player/clubs/${clubId}/courts`),
+  }[]>(`/api/player/clubs/${clubId}/courts`),
 
-  getTimeSlots: (clubId: string, courtId: string, date: string) => 
-    authenticatedGet<Array<{
+  getTimeSlots: (clubId: string, courtId: string, date: string) =>
+    authenticatedGet<{
       startTime: string;
       endTime: string;
       isAvailable: boolean;
-    }>>(`/api/player/clubs/${clubId}/courts/${courtId}/timeslots?date=${date}`),
+    }[]>(`/api/player/clubs/${clubId}/courts/${courtId}/timeslots?date=${date}`),
 
-  // Tournaments
   getTournaments: (clubId?: string, status?: string) => {
     const params = new URLSearchParams();
     if (clubId) params.append('clubId', clubId);
     if (status) params.append('status', status);
     const queryString = params.toString();
     const endpoint = queryString ? `/api/player/tournaments?${queryString}` : "/api/player/tournaments";
-    return authenticatedGet<Array<{
+    return authenticatedGet<{
       id: string;
       name: string;
       clubName: string;
@@ -236,7 +242,7 @@ export const playerAPI = {
       participants: number;
       maxParticipants: number;
       description?: string;
-    }>>(endpoint);
+    }[]>(endpoint);
   },
 
   getTournamentDetails: (tournamentId: string) => authenticatedGet<{
@@ -256,7 +262,6 @@ export const playerAPI = {
 
   joinTournament: (tournamentId: string) => authenticatedPost<{ success: boolean }>(`/api/player/tournaments/${tournamentId}/join`, {}),
 
-  // Profile & Stats
   getUserStats: (clubId: string) => authenticatedGet<{
     points: number;
     eloRating: number;
@@ -265,10 +270,10 @@ export const playerAPI = {
     matchesPlayed: number;
     setsWon: number;
     setsLost: number;
-    recentMatches: Array<{ opponent: string; result: string; date: string }>;
+    recentMatches: { opponent: string; result: string; date: string }[];
   }>(`/api/player/stats?clubId=${clubId}`),
 
-  getRankings: (clubId: string) => authenticatedGet<Array<{
+  getRankings: (clubId: string) => authenticatedGet<{
     rank: number;
     userId: string;
     userName: string;
@@ -277,24 +282,21 @@ export const playerAPI = {
     wins: number;
     losses: number;
     matchesPlayed: number;
-  }>>(`/api/player/clubs/${clubId}/rankings`),
+  }[]>(`/api/player/clubs/${clubId}/rankings`),
 
-  // Notifications
-  getNotifications: () => authenticatedGet<Array<{
+  getNotifications: () => authenticatedGet<{
     id: string;
     title: string;
     body: string;
     type: string;
     isRead: boolean;
     createdAt: string;
-  }>>("/api/player/notifications"),
+  }[]>("/api/player/notifications"),
 
   markNotificationRead: (notificationId: string) => authenticatedPut<{ success: boolean }>(`/api/player/notifications/${notificationId}/read`, {}),
 };
 
-// Club Admin API endpoints
 export const clubAPI = {
-  // Dashboard
   getDashboard: (clubId: string) => authenticatedGet<{
     todayBookings: number;
     activeMembers: number;
@@ -303,7 +305,6 @@ export const clubAPI = {
     totalCourts: number;
   }>(`/api/club/dashboard?clubId=${clubId}`),
 
-  // Club Settings
   getClubInfo: (clubId: string) => authenticatedGet<{
     id: string;
     name: string;
@@ -321,13 +322,12 @@ export const clubAPI = {
       email: string;
     }>(`/api/club/info?clubId=${clubId}`, data),
 
-  // Courts
-  getCourts: (clubId: string) => authenticatedGet<Array<{
+  getCourts: (clubId: string) => authenticatedGet<{
     id: string;
     name: string;
     isActive: boolean;
     createdAt: string;
-  }>>(`/api/club/courts?clubId=${clubId}`),
+  }[]>(`/api/club/courts?clubId=${clubId}`),
 
   createCourt: (clubId: string, data: { name: string; isActive: boolean }) =>
     authenticatedPost<{
@@ -348,12 +348,11 @@ export const clubAPI = {
   deleteCourt: (clubId: string, courtId: string) =>
     authenticatedDelete<{ success: boolean }>(`/api/club/courts/${courtId}?clubId=${clubId}`),
 
-  // Bookings
   getBookings: (clubId: string, status?: string, date?: string) => {
     const params = new URLSearchParams({ clubId });
     if (status) params.append('status', status);
     if (date) params.append('date', date);
-    return authenticatedGet<Array<{
+    return authenticatedGet<{
       id: string;
       userName: string;
       userEmail: string;
@@ -364,7 +363,7 @@ export const clubAPI = {
       status: 'confirmed' | 'cancelled' | 'checked_in' | 'no_show' | 'completed';
       qrCode: string;
       createdAt: string;
-    }>>(`/api/club/bookings?${params.toString()}`);
+    }[]>(`/api/club/bookings?${params.toString()}`);
   },
 
   updateBookingStatus: (clubId: string, bookingId: string, status: 'confirmed' | 'cancelled' | 'checked_in' | 'no_show' | 'completed') =>
@@ -373,8 +372,7 @@ export const clubAPI = {
       status: string;
     }>(`/api/club/bookings/${bookingId}/status?clubId=${clubId}`, { status }),
 
-  // Tournaments
-  getTournaments: (clubId: string) => authenticatedGet<Array<{
+  getTournaments: (clubId: string) => authenticatedGet<{
     id: string;
     name: string;
     type: 'Traditional' | 'Super 8' | 'Rey de cancha' | 'Americano';
@@ -384,7 +382,7 @@ export const clubAPI = {
     maxParticipants: number;
     participantCount: number;
     createdAt: string;
-  }>>(`/api/club/tournaments?clubId=${clubId}`),
+  }[]>(`/api/club/tournaments?clubId=${clubId}`),
 
   createTournament: (clubId: string, data: {
     name: string;
@@ -408,14 +406,14 @@ export const clubAPI = {
     authenticatedDelete<{ success: boolean }>(`/api/club/tournaments/${tournamentId}?clubId=${clubId}`),
 
   getTournamentRequests: (clubId: string, tournamentId: string) =>
-    authenticatedGet<Array<{
+    authenticatedGet<{
       id: string;
       userId: string;
       userName: string;
       userEmail: string;
       status: 'pending' | 'approved' | 'rejected';
       createdAt: string;
-    }>>(`/api/club/tournaments/${tournamentId}/requests?clubId=${clubId}`),
+    }[]>(`/api/club/tournaments/${tournamentId}/requests?clubId=${clubId}`),
 
   approveTournamentRequest: (clubId: string, tournamentId: string, requestId: string) =>
     authenticatedPut<{ success: boolean }>(`/api/club/tournaments/${tournamentId}/requests/${requestId}/approve?clubId=${clubId}`, {}),
@@ -427,41 +425,39 @@ export const clubAPI = {
     authenticatedPost<{
       success: boolean;
       matchesCreated: number;
-      bracket: Array<{
+      bracket: {
         matchId: string;
         round: number;
-        teamA: Array<{ userId: string; userName: string }>;
-        teamB: Array<{ userId: string; userName: string }>;
-      }>;
+        teamA: { userId: string; userName: string }[];
+        teamB: { userId: string; userName: string }[];
+      }[];
     }>(`/api/club/tournaments/${tournamentId}/close-registration?clubId=${clubId}`, {}),
 
-  // Matches
   getMatches: (clubId: string, tournamentId?: string, status?: string) => {
     const params = new URLSearchParams({ clubId });
     if (tournamentId) params.append('tournamentId', tournamentId);
     if (status) params.append('status', status);
-    return authenticatedGet<Array<{
+    return authenticatedGet<{
       id: string;
       tournamentId?: string;
       tournamentName?: string;
       round?: number;
       status: 'pending' | 'scheduled' | 'played' | 'verified' | 'disputed';
-      teamA: Array<{ userId: string; userName: string }>;
-      teamB: Array<{ userId: string; userName: string }>;
-      results: Array<{ setNumber: number; teamAScore: number; teamBScore: number }>;
+      teamA: { userId: string; userName: string }[];
+      teamB: { userId: string; userName: string }[];
+      results: { setNumber: number; teamAScore: number; teamBScore: number }[];
       createdAt: string;
-    }>>(`/api/club/matches?${params.toString()}`);
+    }[]>(`/api/club/matches?${params.toString()}`);
   },
 
-  recordMatchResult: (clubId: string, matchId: string, results: Array<{ setNumber: number; teamAScore: number; teamBScore: number }>) =>
+  recordMatchResult: (clubId: string, matchId: string, results: { setNumber: number; teamAScore: number; teamBScore: number }[]) =>
     authenticatedPost<{
       id: string;
       status: string;
-      results: Array<{ setNumber: number; teamAScore: number; teamBScore: number }>;
+      results: { setNumber: number; teamAScore: number; teamBScore: number }[];
     }>(`/api/club/matches/${matchId}/result?clubId=${clubId}`, { results }),
 
-  // Rankings
-  getRankings: (clubId: string) => authenticatedGet<Array<{
+  getRankings: (clubId: string) => authenticatedGet<{
     rank: number;
     userId: string;
     userName: string;
@@ -470,13 +466,12 @@ export const clubAPI = {
     wins: number;
     losses: number;
     matchesPlayed: number;
-  }>>(`/api/club/rankings?clubId=${clubId}`),
+  }[]>(`/api/club/rankings?clubId=${clubId}`),
 
   recalculateRankings: (clubId: string) =>
     authenticatedPost<{ success: boolean }>(`/api/club/rankings/recalculate?clubId=${clubId}`, {}),
 
-  // Players
-  getPlayers: (clubId: string) => authenticatedGet<Array<{
+  getPlayers: (clubId: string) => authenticatedGet<{
     id: string;
     userId: string;
     userName: string;
@@ -490,7 +485,7 @@ export const clubAPI = {
       losses: number;
       matchesPlayed: number;
     };
-  }>>(`/api/club/players?clubId=${clubId}`),
+  }[]>(`/api/club/players?clubId=${clubId}`),
 
   addPlayer: (clubId: string, email: string) =>
     authenticatedPost<{
@@ -505,15 +500,14 @@ export const clubAPI = {
   removePlayer: (clubId: string, userId: string) =>
     authenticatedDelete<{ success: boolean }>(`/api/club/players/${userId}?clubId=${clubId}`),
 
-  // Staff
-  getStaff: (clubId: string) => authenticatedGet<Array<{
+  getStaff: (clubId: string) => authenticatedGet<{
     id: string;
     userId: string;
     userName: string;
     userEmail: string;
     role: 'staff' | 'admin';
     joinedAt: string;
-  }>>(`/api/club/staff?clubId=${clubId}`),
+  }[]>(`/api/club/staff?clubId=${clubId}`),
 
   addStaff: (clubId: string, email: string) =>
     authenticatedPost<{
@@ -528,11 +522,9 @@ export const clubAPI = {
   removeStaff: (clubId: string, userId: string) =>
     authenticatedDelete<{ success: boolean }>(`/api/club/staff/${userId}?clubId=${clubId}`),
 
-  // Notifications
   sendNotification: (clubId: string, data: { title: string; body: string; target: 'all' | 'players' | 'staff' }) =>
     authenticatedPost<{ success: boolean; notificationsSent: number }>(`/api/club/notifications?clubId=${clubId}`, data),
 
-  // QR Scanner
   validateQR: (clubId: string, qrCode: string) =>
     authenticatedPost<{
       success: boolean;

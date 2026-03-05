@@ -13,19 +13,14 @@ import {
   ScrollView,
 } from "react-native";
 import { useAuth } from "@/contexts/AuthContext";
-import { useRouter } from "expo-router";
-import { PlayLinkLogo } from "@/components/PlayLinkLogo";
 
 type Mode = "signin" | "signup";
-type UserType = "player" | "club";
 
 export default function AuthScreen() {
-  const router = useRouter();
   const { signInWithEmail, signUpWithEmail, signInWithGoogle, signInWithApple, signInWithGitHub, loading: authLoading } =
     useAuth();
 
   const [mode, setMode] = useState<Mode>("signin");
-  const [userType, setUserType] = useState<UserType>("player");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -48,25 +43,20 @@ export default function AuthScreen() {
     setLoading(true);
     try {
       if (mode === "signin") {
+        console.log("[AuthScreen] Attempting sign in with email:", email);
         await signInWithEmail(email, password);
-        if (userType === "club") {
-          router.replace("/(club)");
-        } else {
-          router.replace("/(tabs)/(home)");
-        }
+        console.log("[AuthScreen] Sign in successful");
       } else {
+        console.log("[AuthScreen] Attempting sign up with email:", email);
         await signUpWithEmail(email, password, name);
+        console.log("[AuthScreen] Sign up successful");
         Alert.alert(
           "Éxito",
           "¡Cuenta creada! Por favor verifica tu email."
         );
-        if (userType === "club") {
-          router.replace("/(club)");
-        } else {
-          router.replace("/(tabs)/(home)");
-        }
       }
     } catch (error: any) {
+      console.error("[AuthScreen] Auth error:", error);
       Alert.alert("Error", error.message || "Autenticación fallida");
     } finally {
       setLoading(false);
@@ -76,6 +66,7 @@ export default function AuthScreen() {
   const handleSocialAuth = async (provider: "google" | "apple" | "github") => {
     setLoading(true);
     try {
+      console.log(`[AuthScreen] Attempting ${provider} sign in`);
       if (provider === "google") {
         await signInWithGoogle();
       } else if (provider === "apple") {
@@ -83,12 +74,9 @@ export default function AuthScreen() {
       } else if (provider === "github") {
         await signInWithGitHub();
       }
-      if (userType === "club") {
-        router.replace("/(club)");
-      } else {
-        router.replace("/(tabs)/(home)");
-      }
+      console.log(`[AuthScreen] ${provider} sign in successful`);
     } catch (error: any) {
+      console.error(`[AuthScreen] ${provider} auth error:`, error);
       Alert.alert("Error", error.message || "Autenticación fallida");
     } finally {
       setLoading(false);
@@ -102,44 +90,6 @@ export default function AuthScreen() {
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
-          <PlayLinkLogo size={140} variant="full" />
-          <Text style={styles.subtitle}>Gestión de Clubes de Pádel</Text>
-
-          <View style={styles.userTypeContainer}>
-            <TouchableOpacity
-              style={[
-                styles.userTypeButton,
-                userType === "player" && styles.userTypeButtonActive,
-              ]}
-              onPress={() => setUserType("player")}
-            >
-              <Text
-                style={[
-                  styles.userTypeText,
-                  userType === "player" && styles.userTypeTextActive,
-                ]}
-              >
-                Jugador
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.userTypeButton,
-                userType === "club" && styles.userTypeButtonActive,
-              ]}
-              onPress={() => setUserType("club")}
-            >
-              <Text
-                style={[
-                  styles.userTypeText,
-                  userType === "club" && styles.userTypeTextActive,
-                ]}
-              >
-                Club
-              </Text>
-            </TouchableOpacity>
-          </View>
-
           <Text style={styles.title}>
             {mode === "signin" ? "Iniciar Sesión" : "Registrarse"}
           </Text>
@@ -248,49 +198,17 @@ const styles = StyleSheet.create({
     padding: 24,
     justifyContent: "center",
   },
-  subtitle: {
-    fontSize: 16,
-    marginBottom: 32,
-    marginTop: 16,
-    textAlign: "center",
-    color: "#333333",
-  },
-  userTypeContainer: {
-    flexDirection: "row",
-    marginBottom: 24,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#EEEEEE",
-    overflow: "hidden",
-  },
-  userTypeButton: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
-  userTypeButtonActive: {
-    backgroundColor: "#4A9BF0",
-  },
-  userTypeText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333333",
-  },
-  userTypeTextActive: {
-    color: "#fff",
-  },
   title: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: "bold",
-    marginBottom: 24,
+    marginBottom: 32,
     textAlign: "center",
-    color: "#000000",
+    color: "#000",
   },
   input: {
     height: 50,
     borderWidth: 1,
-    borderColor: "#EEEEEE",
+    borderColor: "#ddd",
     borderRadius: 8,
     paddingHorizontal: 16,
     marginBottom: 16,
@@ -329,17 +247,17 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: "#EEEEEE",
+    backgroundColor: "#ddd",
   },
   dividerText: {
     marginHorizontal: 12,
-    color: "#333333",
+    color: "#666",
     fontSize: 14,
   },
   socialButton: {
     height: 50,
     borderWidth: 1,
-    borderColor: "#EEEEEE",
+    borderColor: "#ddd",
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
@@ -348,12 +266,12 @@ const styles = StyleSheet.create({
   },
   socialButtonText: {
     fontSize: 16,
-    color: "#000000",
+    color: "#000",
     fontWeight: "500",
   },
   appleButton: {
-    backgroundColor: "#000000",
-    borderColor: "#000000",
+    backgroundColor: "#000",
+    borderColor: "#000",
   },
   appleButtonText: {
     color: "#fff",
