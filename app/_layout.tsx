@@ -15,7 +15,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useColorScheme, Alert } from "react-native";
+import { useColorScheme, Alert, ActivityIndicator, View } from "react-native";
 import { useFonts } from "expo-font";
 import { SystemBars } from "react-native-edge-to-edge";
 import { colors } from "@/styles/commonStyles";
@@ -52,22 +52,34 @@ function RootLayoutNav() {
   const router = useRouter();
 
   useEffect(() => {
-    if (loading) return;
+    if (loading) {
+      console.log("[RootLayout] Auth loading, waiting...");
+      return;
+    }
 
     const inAuthGroup = segments[0] === 'auth' || segments[0] === 'auth-popup' || segments[0] === 'auth-callback';
-    const inClubGroup = segments[0] === '(club)';
     const inTabsGroup = segments[0] === '(tabs)';
 
-    console.log('Auth state changed - User:', user ? 'logged in' : 'not logged in', 'Segments:', segments);
+    console.log('[RootLayout] Auth state - User:', user ? `logged in (${user.email})` : 'not logged in', 'Segments:', segments);
 
     if (!user && !inAuthGroup) {
-      console.log('Redirecting to auth screen');
+      console.log('[RootLayout] User not authenticated, redirecting to /auth');
       router.replace('/auth');
-    } else if (user && inAuthGroup) {
-      console.log('User logged in, redirecting to home');
-      router.replace('/(tabs)/(home)');
+    } else if (user && (inAuthGroup || segments.length === 0)) {
+      console.log('[RootLayout] User authenticated, redirecting to home');
+      setTimeout(() => {
+        router.replace('/(tabs)/(home)');
+      }, 100);
     }
-  }, [user, loading, segments]);
+  }, [user, loading, segments, router]);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
+        <ActivityIndicator size="large" color="#4A9BF0" />
+      </View>
+    );
+  }
 
   return (
     <Stack screenOptions={{ headerShown: false }}>

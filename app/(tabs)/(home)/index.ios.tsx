@@ -51,6 +51,7 @@ export default function HomeScreen() {
   const { user } = useAuth();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const currentColors = colors[colorScheme ?? 'light'];
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -114,22 +115,22 @@ export default function HomeScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors[colorScheme ?? 'light'].background }]}>
+      <View style={[styles.container, { backgroundColor: currentColors.background }]}>
         <Stack.Screen options={{ headerShown: false }} />
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors[colorScheme ?? 'light'].primary} />
-          <Text style={[styles.loadingText, { color: colors[colorScheme ?? 'light'].text }]}>
+          <ActivityIndicator size="large" color={currentColors.primary} />
+          <Text style={[styles.loadingText, { color: currentColors.text }]}>
             Cargando...
           </Text>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   const userName = user?.name || user?.email?.split('@')[0] || 'Jugador';
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors[colorScheme ?? 'light'].background }]} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: currentColors.background }]} edges={['top']}>
       <Stack.Screen options={{ headerShown: false }} />
       
       <ScrollView
@@ -139,7 +140,7 @@ export default function HomeScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={colors[colorScheme ?? 'light'].primary}
+            tintColor={currentColors.primary}
           />
         }
       >

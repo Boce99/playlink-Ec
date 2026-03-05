@@ -3,7 +3,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { colors } from '@/styles/commonStyles';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState, useEffect, useCallback } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
   Text,
@@ -51,7 +50,9 @@ export default function HomeScreen() {
   const router = useRouter();
   const { user } = useAuth();
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const currentColors = colors[colorScheme ?? 'light'];
+
+  console.log('[HomeScreen] Rendering - User:', user?.email, 'ColorScheme:', colorScheme);
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -64,24 +65,19 @@ export default function HomeScreen() {
     try {
       setLoading(true);
 
-      // Fetch user's clubs
-      const clubsData = await playerAPI.getClubs();
-      console.log('HomeScreen: Loaded clubs:', clubsData.length);
-      setClubs(clubsData);
+      // TODO: Backend Integration - GET /api/player/clubs to fetch user's clubs
+      // Temporary: Set empty array
+      setClubs([]);
 
-      // Fetch upcoming bookings
-      const bookingsData = await playerAPI.getBookings();
-      const upcoming = bookingsData
-        .filter(b => b.status === 'confirmed' || b.status === 'checked_in')
-        .slice(0, 3);
-      console.log('HomeScreen: Loaded upcoming bookings:', upcoming.length);
-      setUpcomingBookings(upcoming);
+      // TODO: Backend Integration - GET /api/player/bookings to fetch user's bookings
+      // Temporary: Set empty array
+      setUpcomingBookings([]);
 
-      // Fetch notifications
-      const notificationsData = await playerAPI.getNotifications();
-      const unread = notificationsData.filter(n => !n.isRead).slice(0, 3);
-      console.log('HomeScreen: Loaded unread notifications:', unread.length);
-      setNotifications(unread);
+      // TODO: Backend Integration - GET /api/player/notifications to fetch notifications
+      // Temporary: Set empty array
+      setNotifications([]);
+
+      console.log('HomeScreen: Data loaded successfully');
     } catch (error: any) {
       console.error('HomeScreen: Error loading data:', error.message);
     } finally {
@@ -115,22 +111,22 @@ export default function HomeScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors[colorScheme ?? 'light'].background }]}>
+      <View style={[styles.container, { backgroundColor: currentColors.background }]}>
         <Stack.Screen options={{ headerShown: false }} />
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors[colorScheme ?? 'light'].primary} />
-          <Text style={[styles.loadingText, { color: colors[colorScheme ?? 'light'].text }]}>
+          <ActivityIndicator size="large" color={currentColors.primary} />
+          <Text style={[styles.loadingText, { color: currentColors.text }]}>
             Cargando...
           </Text>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   const userName = user?.name || user?.email?.split('@')[0] || 'Jugador';
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors[colorScheme ?? 'light'].background }]}>
+    <View style={[styles.container, { backgroundColor: currentColors.background }]}>
       <Stack.Screen options={{ headerShown: false }} />
       
       <ScrollView
@@ -140,32 +136,32 @@ export default function HomeScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={colors[colorScheme ?? 'light'].primary}
+            tintColor={currentColors.primary}
           />
         }
       >
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={[styles.greeting, { color: colors[colorScheme ?? 'light'].textSecondary }]}>
+            <Text style={[styles.greeting, { color: currentColors.textSecondary }]}>
               Hola,
             </Text>
-            <Text style={[styles.userName, { color: colors[colorScheme ?? 'light'].text }]}>
+            <Text style={[styles.userName, { color: currentColors.text }]}>
               {userName}
             </Text>
           </View>
           <TouchableOpacity
-            style={[styles.notificationButton, { backgroundColor: colors[colorScheme ?? 'light'].card }]}
+            style={[styles.notificationButton, { backgroundColor: currentColors.card }]}
             onPress={() => router.push('/notifications')}
           >
             <IconSymbol
               ios_icon_name="bell.fill"
               android_material_icon_name="notifications"
               size={24}
-              color={colors[colorScheme ?? 'light'].text}
+              color={currentColors.text}
             />
             {notifications.length > 0 && (
-              <View style={[styles.badge, { backgroundColor: colors[colorScheme ?? 'light'].error }]}>
+              <View style={[styles.badge, { backgroundColor: currentColors.error }]}>
                 <Text style={styles.badgeText}>{notifications.length}</Text>
               </View>
             )}
@@ -174,57 +170,57 @@ export default function HomeScreen() {
 
         {/* Quick Actions */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors[colorScheme ?? 'light'].text }]}>
+          <Text style={[styles.sectionTitle, { color: currentColors.text }]}>
             Acciones Rápidas
           </Text>
           <View style={styles.quickActions}>
             <TouchableOpacity
-              style={[styles.actionCard, { backgroundColor: colors[colorScheme ?? 'light'].card }]}
+              style={[styles.actionCard, { backgroundColor: currentColors.card }]}
               onPress={() => router.push('/(tabs)/bookings')}
             >
-              <View style={[styles.actionIcon, { backgroundColor: colors[colorScheme ?? 'light'].primary + '20' }]}>
+              <View style={[styles.actionIcon, { backgroundColor: currentColors.primary + '20' }]}>
                 <IconSymbol
                   ios_icon_name="calendar"
                   android_material_icon_name="calendar-today"
                   size={28}
-                  color={colors[colorScheme ?? 'light'].primary}
+                  color={currentColors.primary}
                 />
               </View>
-              <Text style={[styles.actionText, { color: colors[colorScheme ?? 'light'].text }]}>
+              <Text style={[styles.actionText, { color: currentColors.text }]}>
                 Reservar
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.actionCard, { backgroundColor: colors[colorScheme ?? 'light'].card }]}
+              style={[styles.actionCard, { backgroundColor: currentColors.card }]}
               onPress={() => router.push('/(tabs)/tournaments')}
             >
-              <View style={[styles.actionIcon, { backgroundColor: colors[colorScheme ?? 'light'].secondary + '20' }]}>
+              <View style={[styles.actionIcon, { backgroundColor: currentColors.secondary + '20' }]}>
                 <IconSymbol
                   ios_icon_name="trophy.fill"
                   android_material_icon_name="emoji-events"
                   size={28}
-                  color={colors[colorScheme ?? 'light'].secondary}
+                  color={currentColors.secondary}
                 />
               </View>
-              <Text style={[styles.actionText, { color: colors[colorScheme ?? 'light'].text }]}>
+              <Text style={[styles.actionText, { color: currentColors.text }]}>
                 Torneos
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.actionCard, { backgroundColor: colors[colorScheme ?? 'light'].card }]}
+              style={[styles.actionCard, { backgroundColor: currentColors.card }]}
               onPress={() => router.push('/(tabs)/profile')}
             >
-              <View style={[styles.actionIcon, { backgroundColor: colors[colorScheme ?? 'light'].accent + '20' }]}>
+              <View style={[styles.actionIcon, { backgroundColor: currentColors.accent + '20' }]}>
                 <IconSymbol
                   ios_icon_name="chart.bar.fill"
                   android_material_icon_name="bar-chart"
                   size={28}
-                  color={colors[colorScheme ?? 'light'].accent}
+                  color={currentColors.accent}
                 />
               </View>
-              <Text style={[styles.actionText, { color: colors[colorScheme ?? 'light'].text }]}>
+              <Text style={[styles.actionText, { color: currentColors.text }]}>
                 Ranking
               </Text>
             </TouchableOpacity>
@@ -234,29 +230,29 @@ export default function HomeScreen() {
         {/* Upcoming Bookings */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: colors[colorScheme ?? 'light'].text }]}>
+            <Text style={[styles.sectionTitle, { color: currentColors.text }]}>
               Próximas Reservas
             </Text>
             <TouchableOpacity onPress={() => router.push('/(tabs)/bookings')}>
-              <Text style={[styles.seeAllText, { color: colors[colorScheme ?? 'light'].primary }]}>
+              <Text style={[styles.seeAllText, { color: currentColors.primary }]}>
                 Ver todas
               </Text>
             </TouchableOpacity>
           </View>
 
           {upcomingBookings.length === 0 ? (
-            <View style={[styles.emptyCard, { backgroundColor: colors[colorScheme ?? 'light'].card }]}>
+            <View style={[styles.emptyCard, { backgroundColor: currentColors.card }]}>
               <IconSymbol
                 ios_icon_name="calendar"
                 android_material_icon_name="calendar-today"
                 size={48}
-                color={colors[colorScheme ?? 'light'].textSecondary}
+                color={currentColors.textSecondary}
               />
-              <Text style={[styles.emptyText, { color: colors[colorScheme ?? 'light'].textSecondary }]}>
+              <Text style={[styles.emptyText, { color: currentColors.textSecondary }]}>
                 No tienes reservas próximas
               </Text>
               <TouchableOpacity
-                style={[styles.emptyButton, { backgroundColor: colors[colorScheme ?? 'light'].primary }]}
+                style={[styles.emptyButton, { backgroundColor: currentColors.primary }]}
                 onPress={() => router.push('/(tabs)/bookings')}
               >
                 <Text style={styles.emptyButtonText}>Hacer una reserva</Text>
@@ -271,19 +267,19 @@ export default function HomeScreen() {
               return (
                 <View
                   key={booking.id}
-                  style={[styles.bookingCard, { backgroundColor: colors[colorScheme ?? 'light'].card }]}
+                  style={[styles.bookingCard, { backgroundColor: currentColors.card }]}
                 >
                   <View style={styles.bookingHeader}>
-                    <Text style={[styles.bookingClub, { color: colors[colorScheme ?? 'light'].text }]}>
+                    <Text style={[styles.bookingClub, { color: currentColors.text }]}>
                       {booking.clubName}
                     </Text>
-                    <View style={[styles.statusBadge, { backgroundColor: colors[colorScheme ?? 'light'].success + '20' }]}>
-                      <Text style={[styles.statusText, { color: colors[colorScheme ?? 'light'].success }]}>
+                    <View style={[styles.statusBadge, { backgroundColor: currentColors.success + '20' }]}>
+                      <Text style={[styles.statusText, { color: currentColors.success }]}>
                         Confirmada
                       </Text>
                     </View>
                   </View>
-                  <Text style={[styles.bookingCourt, { color: colors[colorScheme ?? 'light'].textSecondary }]}>
+                  <Text style={[styles.bookingCourt, { color: currentColors.textSecondary }]}>
                     {booking.courtName}
                   </Text>
                   <View style={styles.bookingDetails}>
@@ -292,9 +288,9 @@ export default function HomeScreen() {
                         ios_icon_name="calendar"
                         android_material_icon_name="calendar-today"
                         size={16}
-                        color={colors[colorScheme ?? 'light'].textSecondary}
+                        color={currentColors.textSecondary}
                       />
-                      <Text style={[styles.bookingDetailText, { color: colors[colorScheme ?? 'light'].textSecondary }]}>
+                      <Text style={[styles.bookingDetailText, { color: currentColors.textSecondary }]}>
                         {dateDisplay}
                       </Text>
                     </View>
@@ -303,15 +299,15 @@ export default function HomeScreen() {
                         ios_icon_name="clock"
                         android_material_icon_name="access-time"
                         size={16}
-                        color={colors[colorScheme ?? 'light'].textSecondary}
+                        color={currentColors.textSecondary}
                       />
-                      <Text style={[styles.bookingDetailText, { color: colors[colorScheme ?? 'light'].textSecondary }]}>
+                      <Text style={[styles.bookingDetailText, { color: currentColors.textSecondary }]}>
                         {startTimeDisplay}
                       </Text>
-                      <Text style={[styles.bookingDetailText, { color: colors[colorScheme ?? 'light'].textSecondary }]}>
+                      <Text style={[styles.bookingDetailText, { color: currentColors.textSecondary }]}>
                         -
                       </Text>
-                      <Text style={[styles.bookingDetailText, { color: colors[colorScheme ?? 'light'].textSecondary }]}>
+                      <Text style={[styles.bookingDetailText, { color: currentColors.textSecondary }]}>
                         {endTimeDisplay}
                       </Text>
                     </View>
@@ -325,28 +321,28 @@ export default function HomeScreen() {
         {/* My Clubs */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: colors[colorScheme ?? 'light'].text }]}>
+            <Text style={[styles.sectionTitle, { color: currentColors.text }]}>
               Mis Clubes
             </Text>
             <TouchableOpacity onPress={() => router.push('/clubs/discover')}>
-              <Text style={[styles.seeAllText, { color: colors[colorScheme ?? 'light'].primary }]}>
+              <Text style={[styles.seeAllText, { color: currentColors.primary }]}>
                 Descubrir
               </Text>
             </TouchableOpacity>
           </View>
           {clubs.length === 0 ? (
-            <View style={[styles.emptyCard, { backgroundColor: colors[colorScheme ?? 'light'].card }]}>
+            <View style={[styles.emptyCard, { backgroundColor: currentColors.card }]}>
               <IconSymbol
                 ios_icon_name="building.2"
                 android_material_icon_name="business"
                 size={48}
-                color={colors[colorScheme ?? 'light'].textSecondary}
+                color={currentColors.textSecondary}
               />
-              <Text style={[styles.emptyText, { color: colors[colorScheme ?? 'light'].textSecondary }]}>
+              <Text style={[styles.emptyText, { color: currentColors.textSecondary }]}>
                 No perteneces a ningún club
               </Text>
               <TouchableOpacity
-                style={[styles.emptyButton, { backgroundColor: colors[colorScheme ?? 'light'].primary }]}
+                style={[styles.emptyButton, { backgroundColor: currentColors.primary }]}
                 onPress={() => router.push('/clubs/discover')}
               >
                 <Text style={styles.emptyButtonText}>Descubrir clubes</Text>
@@ -356,22 +352,22 @@ export default function HomeScreen() {
             clubs.map((club) => (
               <View
                 key={club.id}
-                style={[styles.clubCard, { backgroundColor: colors[colorScheme ?? 'light'].card }]}
+                style={[styles.clubCard, { backgroundColor: currentColors.card }]}
               >
-                <View style={[styles.clubIcon, { backgroundColor: colors[colorScheme ?? 'light'].primary + '20' }]}>
+                <View style={[styles.clubIcon, { backgroundColor: currentColors.primary + '20' }]}>
                   <IconSymbol
                     ios_icon_name="building.2"
                     android_material_icon_name="business"
                     size={24}
-                    color={colors[colorScheme ?? 'light'].primary}
+                    color={currentColors.primary}
                   />
                 </View>
                 <View style={styles.clubInfo}>
-                  <Text style={[styles.clubName, { color: colors[colorScheme ?? 'light'].text }]}>
+                  <Text style={[styles.clubName, { color: currentColors.text }]}>
                     {club.name}
                   </Text>
                   {club.address && (
-                    <Text style={[styles.clubAddress, { color: colors[colorScheme ?? 'light'].textSecondary }]}>
+                    <Text style={[styles.clubAddress, { color: currentColors.textSecondary }]}>
                       {club.address}
                     </Text>
                   )}
@@ -380,14 +376,14 @@ export default function HomeScreen() {
                   ios_icon_name="chevron.right"
                   android_material_icon_name="chevron-right"
                   size={20}
-                  color={colors[colorScheme ?? 'light'].textSecondary}
+                  color={currentColors.textSecondary}
                 />
               </View>
             ))
           )}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

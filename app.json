@@ -1,11 +1,10 @@
-
 {
   "expo": {
-    "name": "PlayLink Ec",
-    "slug": "playlink-ec",
-    "version": "1.0.0",
+    "name": "nombre-de-app-playli",
+    "slug": "nombre-de-app-playli-urognu",
+    "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/images/efdb3d46-d228-453c-bd96-dbf9f66de36c.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -26,7 +25,8 @@
         "backgroundColor": "#4A9BF0"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.playlink.ec"
+      "package": "com.playlinkec.app",
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/images/efdb3d46-d228-453c-bd96-dbf9f66de36c.png",
@@ -37,13 +37,13 @@
       "expo-router",
       "expo-web-browser"
     ],
-    "scheme": "playlink",
+    "scheme": "nombredeappplayli",
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
       "router": {},
-      "backendUrl": "https://wc23hvzw89jmf7jv5qsgb83jft54us7u.app.specular.dev"
+      "backendUrl": "https://zvazu5zqp6uvvbjbnq5jarxtr77798b3.app.specular.dev"
     }
   }
 }
