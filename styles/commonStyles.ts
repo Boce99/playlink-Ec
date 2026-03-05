@@ -37,6 +37,26 @@ export const colors = {
     lightGray: '#333333',
     darkGray: '#EEEEEE',
   },
+
+  // Flat color references for convenience (used across screens)
+  primary: '#4A9BF0',
+  error: '#EF4444',
+  success: '#10B981',
+  warning: '#F59E0B',
+
+  // Light theme flat references
+  backgroundLight: '#FFFFFF',
+  cardLight: '#FFFFFF',
+  textLight: '#000000',
+  mutedLight: '#666666',
+  borderLight: '#EEEEEE',
+
+  // Dark theme flat references
+  backgroundDark: '#000000',
+  cardDark: '#1A1A1A',
+  textDark: '#FFFFFF',
+  mutedDark: '#999999',
+  borderDark: '#333333',
 };
 
 export const commonStyles = StyleSheet.create({
