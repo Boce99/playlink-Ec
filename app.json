@@ -1,4 +1,3 @@
-
 {
   "expo": {
     "name": "PlayLink Ec",
@@ -43,7 +42,7 @@
     },
     "extra": {
       "router": {},
-      "backendUrl": "https://wc23hvzw89jmf7jv5qsgb83jft54us7u.app.specular.dev"
+      "backendUrl": "https://zvazu5zqp6uvvbjbnq5jarxtr77798b3.app.specular.dev"
     }
   }
 }
