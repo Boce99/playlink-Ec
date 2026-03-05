@@ -8,6 +8,13 @@
       "when": 1772751219311,
       "tag": "20260305225339_whole_shockwave",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1772754758918,
+      "tag": "20260305235238_chubby_grandmaster",
+      "breakpoints": true
     }
   ]
 }

@@ -2,6 +2,7 @@ import { createApplication } from "@specific-dev/framework";
 import * as appSchema from './db/schema/schema.js';
 import * as authSchema from './db/schema/auth-schema.js';
 import { registerUserRoutes } from './routes/users.js';
+import { registerClubRankingRoutes } from './routes/club-rankings.js';
 
 // Combine app schema with auth schema
 const schema = { ...appSchema, ...authSchema };
@@ -37,6 +38,7 @@ app.withAuth({
 // Register routes - add your route modules here
 // IMPORTANT: Always use registration functions to avoid circular dependency issues
 registerUserRoutes(app);
+registerClubRankingRoutes(app);
 
 await app.run();
 app.logger.info('Application running and ready for authentication');

@@ -22,4 +22,31 @@ describe("API Integration Tests", () => {
     const res = await api("/api/users/me");
     await expectStatus(res, 401);
   });
+
+  test("Update club ranking without auth returns 401", async () => {
+    const res = await api("/api/club/rankings/user123?clubId=00000000-0000-0000-0000-000000000000", {
+      method: "PUT",
+      body: JSON.stringify({ eloRating: 1600, points: 50 }),
+      headers: { "Content-Type": "application/json" },
+    });
+    await expectStatus(res, 401);
+  });
+
+  test("Update club ranking with invalid clubId format returns 400", async () => {
+    const res = await authenticatedApi("/api/club/rankings/user123?clubId=invalid-uuid", authToken, {
+      method: "PUT",
+      body: JSON.stringify({ eloRating: 1600, points: 50 }),
+      headers: { "Content-Type": "application/json" },
+    });
+    await expectStatus(res, 400);
+  });
+
+  test("Update club ranking with nonexistent club returns 404 or 403", async () => {
+    const res = await authenticatedApi("/api/club/rankings/user123?clubId=00000000-0000-0000-0000-000000000000", authToken, {
+      method: "PUT",
+      body: JSON.stringify({ eloRating: 1600, points: 50 }),
+      headers: { "Content-Type": "application/json" },
+    });
+    await expectStatus(res, 403, 404);
+  });
 });
