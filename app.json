@@ -1,8 +1,8 @@
 {
   "expo": {
     "name": "PlayLink Ec",
-    "slug": "playlink-ec",
-    "version": "1.0.0",
+    "slug": "nombre-de-app-playli-urognu",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/efdb3d46-d228-453c-bd96-dbf9f66de36c.png",
     "userInterfaceStyle": "automatic",
@@ -25,7 +25,8 @@
         "backgroundColor": "#4A9BF0"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.playlink.ec"
+      "package": "com.playlinkec.app",
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/images/efdb3d46-d228-453c-bd96-dbf9f66de36c.png",
@@ -42,7 +43,7 @@
     },
     "extra": {
       "router": {},
-      "backendUrl": "https://zvazu5zqp6uvvbjbnq5jarxtr77798b3.app.specular.dev"
+      "backendUrl": "https://prod-proj-4b8flnbb6dmtf8zl23ruj-liwg5h36mq-ey.a.run.app"
     }
   }
 }
