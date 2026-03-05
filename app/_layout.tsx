@@ -58,13 +58,14 @@ function RootLayoutNav() {
     }
 
     const inAuthGroup = segments[0] === 'auth' || segments[0] === 'auth-popup' || segments[0] === 'auth-callback';
+    const inTabsGroup = segments[0] === '(tabs)';
 
     console.log('[RootLayout] Auth state - User:', user ? `logged in (${user.email})` : 'not logged in', 'Segments:', segments);
 
     if (!user && !inAuthGroup) {
       console.log('[RootLayout] User not authenticated, redirecting to /auth');
       router.replace('/auth');
-    } else if (user && inAuthGroup) {
+    } else if (user && (inAuthGroup || segments.length === 0)) {
       console.log('[RootLayout] User authenticated, redirecting to home');
       setTimeout(() => {
         router.replace('/(tabs)/(home)');

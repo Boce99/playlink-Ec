@@ -4,7 +4,7 @@
     "slug": "nombre-de-app-playli-urognu",
     "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/images/efdb3d46-d228-453c-bd96-dbf9f66de36c.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
