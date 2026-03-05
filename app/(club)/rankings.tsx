@@ -4,6 +4,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { IconSymbol } from '@/components/IconSymbol';
+import { useClub } from '@/contexts/ClubContext';
+import { clubAPI } from '@/utils/api';
 import {
   View,
   Text,
@@ -14,6 +16,8 @@ import {
   RefreshControl,
   ActivityIndicator,
   Platform,
+  Modal,
+  TextInput,
 } from 'react-native';
 
 interface RankingPlayer {
@@ -43,16 +47,21 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
   },
-  recalculateButton: {
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 16,
+  },
+  actionButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
     borderRadius: 12,
-    marginBottom: 16,
     gap: 8,
   },
-  recalculateButtonText: {
+  actionButtonText: {
     fontSize: 16,
     fontWeight: '600',
   },
@@ -104,6 +113,10 @@ const styles = StyleSheet.create({
   eloValue: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  editButton: {
+    marginLeft: 8,
+    padding: 4,
   },
   statsContainer: {
     flexDirection: 'row',
@@ -164,13 +177,109 @@ const styles = StyleSheet.create({
   podiumElo: {
     fontSize: 12,
   },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '90%',
+    maxWidth: 400,
+    borderRadius: 16,
+    padding: 24,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  input: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    marginBottom: 16,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  modalButton: {
+    flex: 1,
+    padding: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  feedbackModalContent: {
+    width: '85%',
+    maxWidth: 360,
+    borderRadius: 16,
+    padding: 24,
+    alignItems: 'center',
+  },
+  feedbackTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  feedbackMessage: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 20,
+  },
+  feedbackButton: {
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    borderRadius: 8,
+    minWidth: 120,
+    alignItems: 'center',
+  },
+  feedbackButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  savingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 16,
+  },
 });
 
 export default function RankingsScreen() {
   const [rankings, setRankings] = useState<RankingPlayer[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [editingPlayer, setEditingPlayer] = useState<RankingPlayer | null>(null);
+  const [editedElo, setEditedElo] = useState('');
+  const [editedPoints, setEditedPoints] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [feedbackModal, setFeedbackModal] = useState<{ visible: boolean; title: string; message: string; isError: boolean }>({
+    visible: false,
+    title: '',
+    message: '',
+    isError: false,
+  });
 
+  const { selectedClub } = useClub();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
@@ -180,79 +289,40 @@ export default function RankingsScreen() {
   const mutedColor = isDark ? colors.mutedDark : colors.mutedLight;
   const borderColor = isDark ? colors.borderDark : colors.borderLight;
 
+  const showFeedback = (title: string, message: string, isError = false) => {
+    setFeedbackModal({ visible: true, title, message, isError });
+  };
+
   const loadRankings = useCallback(async () => {
+    if (!selectedClub) {
+      console.log('No club selected, cannot load rankings');
+      setLoading(false);
+      setRefreshing(false);
+      return;
+    }
+
     try {
-      console.log('Loading club rankings...');
-      // TODO: Backend Integration - GET /api/club/rankings
-      // Returns: [{ rank, userId, userName, userEmail, points, eloRating, wins, losses, matchesPlayed, setsWon, setsLost, winRate }]
+      console.log('[Rankings] Loading club rankings for club:', selectedClub.id);
+      const data = await clubAPI.getRankings(selectedClub.id);
       
-      const mockRankings: RankingPlayer[] = [
-        {
-          rank: 1,
-          userId: 'user1',
-          userName: 'Juan Pérez',
-          userEmail: 'juan@example.com',
-          points: 1500,
-          eloRating: 1850,
-          wins: 25,
-          losses: 5,
-          matchesPlayed: 30,
-          setsWon: 52,
-          setsLost: 18,
-          winRate: 83.3,
-        },
-        {
-          rank: 2,
-          userId: 'user2',
-          userName: 'María García',
-          userEmail: 'maria@example.com',
-          points: 1350,
-          eloRating: 1780,
-          wins: 22,
-          losses: 8,
-          matchesPlayed: 30,
-          setsWon: 48,
-          setsLost: 22,
-          winRate: 73.3,
-        },
-        {
-          rank: 3,
-          userId: 'user3',
-          userName: 'Carlos López',
-          userEmail: 'carlos@example.com',
-          points: 1200,
-          eloRating: 1720,
-          wins: 20,
-          losses: 10,
-          matchesPlayed: 30,
-          setsWon: 44,
-          setsLost: 26,
-          winRate: 66.7,
-        },
-        {
-          rank: 4,
-          userId: 'user4',
-          userName: 'Ana Martínez',
-          userEmail: 'ana@example.com',
-          points: 1100,
-          eloRating: 1680,
-          wins: 18,
-          losses: 12,
-          matchesPlayed: 30,
-          setsWon: 40,
-          setsLost: 30,
-          winRate: 60.0,
-        },
-      ];
+      // Calculate additional stats
+      const enrichedData = data.map((player, index) => ({
+        ...player,
+        rank: index + 1,
+        setsWon: 0,
+        setsLost: 0,
+        winRate: player.matchesPlayed > 0 ? (player.wins / player.matchesPlayed) * 100 : 0,
+      }));
       
-      setRankings(mockRankings);
-    } catch (error) {
-      console.error('Error loading rankings:', error);
+      setRankings(enrichedData);
+    } catch (error: any) {
+      console.error('[Rankings] Error loading rankings:', error);
+      showFeedback('Error', error.message || 'No se pudieron cargar los rankings', true);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [selectedClub]);
 
   useEffect(() => {
     loadRankings();
@@ -264,13 +334,67 @@ export default function RankingsScreen() {
   }, [loadRankings]);
 
   const handleRecalculate = async () => {
+    if (!selectedClub) return;
+
     try {
-      console.log('Recalculating rankings...');
-      // TODO: Backend Integration - POST /api/club/rankings/recalculate
+      console.log('[Rankings] Recalculating rankings for club:', selectedClub.id);
+      await clubAPI.recalculateRankings(selectedClub.id);
+      showFeedback('Éxito', 'Rankings recalculados correctamente');
       setRefreshing(true);
       loadRankings();
-    } catch (error) {
-      console.error('Error recalculating rankings:', error);
+    } catch (error: any) {
+      console.error('[Rankings] Error recalculating rankings:', error);
+      showFeedback('Error', error.message || 'No se pudieron recalcular los rankings', true);
+    }
+  };
+
+  const handleEditPlayer = (player: RankingPlayer) => {
+    console.log('[Rankings] Editing player:', player.userName);
+    setEditingPlayer(player);
+    setEditedElo(player.eloRating.toString());
+    setEditedPoints(player.points.toString());
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingPlayer || !selectedClub) return;
+
+    const newElo = parseInt(editedElo);
+    const newPoints = parseInt(editedPoints);
+
+    if (isNaN(newElo) || isNaN(newPoints)) {
+      showFeedback('Error', 'Por favor ingresa valores numéricos válidos', true);
+      return;
+    }
+
+    setSaving(true);
+    try {
+      console.log('[Rankings] Updating ranking for player:', editingPlayer.userId, { eloRating: newElo, points: newPoints });
+      
+      const result = await clubAPI.updateRanking(selectedClub.id, editingPlayer.userId, {
+        eloRating: newElo,
+        points: newPoints,
+      });
+      
+      console.log('[Rankings] Update result:', result);
+      
+      // Update local state with server response
+      setRankings(prev => prev.map(p => 
+        p.userId === editingPlayer.userId 
+          ? { 
+              ...p, 
+              eloRating: result.player?.eloRating ?? newElo, 
+              points: result.player?.points ?? newPoints 
+            }
+          : p
+      ));
+      
+      setEditingPlayer(null);
+      showFeedback('Éxito', `Ranking de ${editingPlayer.userName} actualizado correctamente`);
+    } catch (error: any) {
+      console.error('[Rankings] Error updating ranking:', error);
+      showFeedback('Error', error.message || 'No se pudo actualizar el ranking', true);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -280,6 +404,18 @@ export default function RankingsScreen() {
     if (rank === 3) return '#CD7F32'; // Bronze
     return colors.primary;
   };
+
+  if (!selectedClub) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]}>
+        <Stack.Screen options={{ headerShown: true, title: 'Ranking' }} />
+        <View style={styles.emptyContainer}>
+          <IconSymbol ios_icon_name="building.2" android_material_icon_name="business" size={48} color={mutedColor} />
+          <Text style={[styles.emptyText, { color: mutedColor }]}>No hay club seleccionado</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   if (loading) {
     return (
@@ -306,13 +442,15 @@ export default function RankingsScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
         }
       >
-        <TouchableOpacity
-          style={[styles.recalculateButton, { backgroundColor: colors.primary }]}
-          onPress={handleRecalculate}
-        >
-          <IconSymbol ios_icon_name="arrow.clockwise" android_material_icon_name="refresh" size={20} color="#fff" />
-          <Text style={[styles.recalculateButtonText, { color: '#fff' }]}>Recalcular Ranking</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity
+            style={[styles.actionButton, { backgroundColor: colors.primary }]}
+            onPress={handleRecalculate}
+          >
+            <IconSymbol ios_icon_name="arrow.clockwise" android_material_icon_name="refresh" size={20} color="#fff" />
+            <Text style={[styles.actionButtonText, { color: '#fff' }]}>Recalcular</Text>
+          </TouchableOpacity>
+        </View>
 
         {rankings.length === 0 ? (
           <View style={styles.emptyContainer}>
@@ -330,13 +468,14 @@ export default function RankingsScreen() {
                   const eloText = `ELO: ${player.eloRating}`;
                   
                   return (
-                    <View key={player.userId} style={styles.podiumItem}>
+                    <TouchableOpacity key={player.userId} style={styles.podiumItem} onPress={() => handleEditPlayer(player)}>
                       <View style={[styles.podiumRank, { backgroundColor: rankColor }]}>
                         <Text style={[styles.podiumRankText, { color: '#fff' }]}>{rankTextValue}</Text>
                       </View>
                       <Text style={[styles.podiumName, { color: textColor }]}>{player.userName}</Text>
                       <Text style={[styles.podiumElo, { color: mutedColor }]}>{eloText}</Text>
-                    </View>
+                      <IconSymbol ios_icon_name="pencil" android_material_icon_name="edit" size={14} color={colors.primary} />
+                    </TouchableOpacity>
                   );
                 })}
               </View>
@@ -367,6 +506,12 @@ export default function RankingsScreen() {
                       <Text style={[styles.eloLabel, { color: mutedColor }]}>{eloLabelText}</Text>
                       <Text style={[styles.eloValue, { color: colors.primary }]}>{eloValueText}</Text>
                     </View>
+                    <TouchableOpacity
+                      style={styles.editButton}
+                      onPress={() => handleEditPlayer(player)}
+                    >
+                      <IconSymbol ios_icon_name="pencil" android_material_icon_name="edit" size={20} color={colors.primary} />
+                    </TouchableOpacity>
                   </View>
 
                   <View style={[styles.statsContainer, { borderTopColor: borderColor }]}>
@@ -393,6 +538,94 @@ export default function RankingsScreen() {
           </>
         )}
       </ScrollView>
+
+      {/* Edit Ranking Modal */}
+      <Modal visible={editingPlayer !== null} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: cardBg }]}>
+            <Text style={[styles.modalTitle, { color: textColor }]}>Editar Ranking</Text>
+            
+            {editingPlayer && (
+              <>
+                <Text style={[styles.playerName, { color: textColor, marginBottom: 16 }]}>
+                  {editingPlayer.userName}
+                </Text>
+
+                <Text style={[styles.inputLabel, { color: textColor }]}>ELO Rating</Text>
+                <TextInput
+                  style={[styles.input, { 
+                    borderColor: borderColor, 
+                    color: textColor,
+                    backgroundColor: isDark ? colors.backgroundDark : colors.backgroundLight 
+                  }]}
+                  value={editedElo}
+                  onChangeText={setEditedElo}
+                  keyboardType="numeric"
+                  placeholder="1500"
+                  placeholderTextColor={mutedColor}
+                  editable={!saving}
+                />
+
+                <Text style={[styles.inputLabel, { color: textColor }]}>Puntos</Text>
+                <TextInput
+                  style={[styles.input, { 
+                    borderColor: borderColor, 
+                    color: textColor,
+                    backgroundColor: isDark ? colors.backgroundDark : colors.backgroundLight 
+                  }]}
+                  value={editedPoints}
+                  onChangeText={setEditedPoints}
+                  keyboardType="numeric"
+                  placeholder="1000"
+                  placeholderTextColor={mutedColor}
+                  editable={!saving}
+                />
+              </>
+            )}
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: borderColor, opacity: saving ? 0.5 : 1 }]}
+                onPress={() => !saving && setEditingPlayer(null)}
+                disabled={saving}
+              >
+                <Text style={[styles.modalButtonText, { color: textColor }]}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: colors.primary, opacity: saving ? 0.7 : 1 }]}
+                onPress={handleSaveEdit}
+                disabled={saving}
+              >
+                {saving ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text style={[styles.modalButtonText, { color: '#fff' }]}>Guardar</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Feedback Modal */}
+      <Modal visible={feedbackModal.visible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.feedbackModalContent, { backgroundColor: cardBg }]}>
+            <Text style={[styles.feedbackTitle, { color: feedbackModal.isError ? colors.error : colors.success }]}>
+              {feedbackModal.title}
+            </Text>
+            <Text style={[styles.feedbackMessage, { color: mutedColor }]}>
+              {feedbackModal.message}
+            </Text>
+            <TouchableOpacity
+              style={[styles.feedbackButton, { backgroundColor: feedbackModal.isError ? colors.error : colors.primary }]}
+              onPress={() => setFeedbackModal(prev => ({ ...prev, visible: false }))}
+            >
+              <Text style={styles.feedbackButtonText}>Aceptar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

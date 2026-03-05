@@ -461,12 +461,24 @@ export const clubAPI = {
     rank: number;
     userId: string;
     userName: string;
+    userEmail: string;
     points: number;
     eloRating: number;
     wins: number;
     losses: number;
     matchesPlayed: number;
   }[]>(`/api/club/rankings?clubId=${clubId}`),
+
+  updateRanking: (clubId: string, userId: string, data: { eloRating?: number; points?: number }) =>
+    authenticatedPut<{
+      success: boolean;
+      player: {
+        userId: string;
+        userName: string;
+        eloRating: number;
+        points: number;
+      };
+    }>(`/api/club/rankings/${userId}?clubId=${clubId}`, data),
 
   recalculateRankings: (clubId: string) =>
     authenticatedPost<{ success: boolean }>(`/api/club/rankings/recalculate?clubId=${clubId}`, {}),
