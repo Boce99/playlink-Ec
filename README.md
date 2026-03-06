@@ -1,4 +1,4 @@
-# nombre-de-app-playli
+# PlayLink Ec
 
 This app was built using [Natively.dev](https://natively.dev) - a platform for creating mobile apps.
 
