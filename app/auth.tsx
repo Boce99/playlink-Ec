@@ -13,6 +13,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useAuth } from "@/contexts/AuthContext";
+import { PlayLinkLogo } from "@/components/PlayLinkLogo";
 
 type Mode = "signin" | "signup";
 
@@ -90,6 +91,10 @@ export default function AuthScreen() {
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
+          <View style={styles.logoContainer}>
+            <PlayLinkLogo size={140} variant="full" />
+          </View>
+
           <Text style={styles.title}>
             {mode === "signin" ? "Iniciar Sesión" : "Registrarse"}
           </Text>
@@ -197,6 +202,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24,
     justifyContent: "center",
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginBottom: 32,
   },
   title: {
     fontSize: 32,
