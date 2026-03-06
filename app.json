@@ -38,7 +38,7 @@
       "expo-router",
       "expo-web-browser"
     ],
-    "scheme": "playlink",
+    "scheme": "playlinkec",
     "experiments": {
       "typedRoutes": true
     },
