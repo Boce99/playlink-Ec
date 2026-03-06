@@ -1,35 +1,37 @@
+
 {
   "expo": {
-    "name": "nombre-de-app-playli",
-    "slug": "nombre-de-app-playli-urognu",
-    "version": "1.0.1",
+    "name": "PlayLink Ec",
+    "slug": "playlink-ec",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/efdb3d46-d228-453c-bd96-dbf9f66de36c.png",
+      "image": "./assets/images/natively-dark.png",
       "resizeMode": "contain",
-      "backgroundColor": "#4A9BF0"
+      "backgroundColor": "#000000"
     },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.playlink.ec",
+      "buildNumber": "2",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/efdb3d46-d228-453c-bd96-dbf9f66de36c.png",
-        "backgroundColor": "#4A9BF0"
+        "foregroundImage": "./assets/images/natively-dark.png",
+        "backgroundColor": "#000000"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.playlinkec.app",
+      "package": "com.playlink.ec",
       "versionCode": 2
     },
     "web": {
-      "favicon": "./assets/images/efdb3d46-d228-453c-bd96-dbf9f66de36c.png",
+      "favicon": "./assets/images/final_quest_240x240.png",
       "bundler": "metro"
     },
     "plugins": [
@@ -37,13 +39,13 @@
       "expo-router",
       "expo-web-browser"
     ],
-    "scheme": "nombredeappplayli",
+    "scheme": "playlink",
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
       "router": {},
-      "backendUrl": "https://njmayjfatgpvbx7smykhtge7rn8fwkzq.app.specular.dev"
+      "backendUrl": "https://wc23hvzw89jmf7jv5qsgb83jft54us7u.app.specular.dev"
     }
   }
 }
