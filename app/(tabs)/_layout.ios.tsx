@@ -13,6 +13,10 @@ export default function TabLayout() {
         <Label>Reservas</Label>
         <Icon sf={{ default: 'calendar', selected: 'calendar.badge.clock' }} drawable="calendar-today" />
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="rankings">
+        <Label>Ranking</Label>
+        <Icon sf={{ default: 'chart.bar', selected: 'chart.bar.fill' }} drawable="leaderboard" />
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="tournaments">
         <Label>Torneos</Label>
         <Icon sf={{ default: 'trophy', selected: 'trophy.fill' }} drawable="emoji-events" />

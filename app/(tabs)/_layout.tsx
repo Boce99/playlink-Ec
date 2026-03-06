@@ -22,6 +22,12 @@ export default function TabLayout() {
       label: 'Reservas',
     },
     {
+      name: 'Ranking',
+      route: '/(tabs)/rankings' as Href,
+      icon: 'leaderboard' as any,
+      label: 'Ranking',
+    },
+    {
       name: 'Torneos',
       route: '/(tabs)/tournaments' as Href,
       icon: 'emoji-events' as any,
@@ -41,6 +47,7 @@ export default function TabLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(home)" options={{ headerShown: false }} />
         <Stack.Screen name="bookings" options={{ headerShown: false }} />
+        <Stack.Screen name="rankings" options={{ headerShown: false }} />
         <Stack.Screen name="tournaments" options={{ headerShown: false }} />
         <Stack.Screen name="profile" options={{ headerShown: false }} />
       </Stack>
@@ -53,6 +60,7 @@ export default function TabLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(home)" options={{ headerShown: false }} />
         <Stack.Screen name="bookings" options={{ headerShown: false }} />
+        <Stack.Screen name="rankings" options={{ headerShown: false }} />
         <Stack.Screen name="tournaments" options={{ headerShown: false }} />
         <Stack.Screen name="profile" options={{ headerShown: false }} />
       </Stack>
