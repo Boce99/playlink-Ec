@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -14,18 +14,28 @@ import {
 } from "react-native";
 import { useAuth } from "@/contexts/AuthContext";
 import { PlayLinkLogo } from "@/components/PlayLinkLogo";
+import { useRouter } from "expo-router";
 
 type Mode = "signin" | "signup";
 
 export default function AuthScreen() {
-  const { signInWithEmail, signUpWithEmail, signInWithGoogle, signInWithApple, signInWithGitHub, loading: authLoading } =
+  const { user, signInWithEmail, signUpWithEmail, signInWithGoogle, signInWithApple, signInWithGitHub, loading: authLoading } =
     useAuth();
+  const router = useRouter();
 
   const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Redirect to home if user is already logged in
+  useEffect(() => {
+    if (user && !authLoading) {
+      console.log("[AuthScreen] User is logged in, redirecting to home");
+      router.replace("/(tabs)/(home)");
+    }
+  }, [user, authLoading, router]);
 
   if (authLoading) {
     return (
@@ -41,24 +51,42 @@ export default function AuthScreen() {
       return;
     }
 
+    if (mode === "signup" && password.length < 6) {
+      Alert.alert("Error", "La contraseña debe tener al menos 6 caracteres");
+      return;
+    }
+
     setLoading(true);
     try {
       if (mode === "signin") {
         console.log("[AuthScreen] Attempting sign in with email:", email);
         await signInWithEmail(email, password);
-        console.log("[AuthScreen] Sign in successful");
+        console.log("[AuthScreen] Sign in successful - user will be redirected");
       } else {
         console.log("[AuthScreen] Attempting sign up with email:", email);
-        await signUpWithEmail(email, password, name);
-        console.log("[AuthScreen] Sign up successful");
-        Alert.alert(
-          "Éxito",
-          "¡Cuenta creada! Por favor verifica tu email."
-        );
+        await signUpWithEmail(email, password, name || email.split('@')[0]);
+        console.log("[AuthScreen] Sign up successful - user will be redirected");
+        
+        // Clear form after successful signup
+        setEmail("");
+        setPassword("");
+        setName("");
       }
     } catch (error: any) {
       console.error("[AuthScreen] Auth error:", error);
-      Alert.alert("Error", error.message || "Autenticación fallida");
+      
+      // Provide user-friendly error messages
+      let errorMessage = "Autenticación fallida";
+      
+      if (error.message?.includes("already exists") || error.message?.includes("duplicate")) {
+        errorMessage = "Este email ya está registrado. Por favor inicia sesión.";
+      } else if (error.message?.includes("invalid") || error.message?.includes("incorrect")) {
+        errorMessage = "Email o contraseña incorrectos";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      Alert.alert("Error", errorMessage);
     } finally {
       setLoading(false);
     }
@@ -102,7 +130,7 @@ export default function AuthScreen() {
           {mode === "signup" && (
             <TextInput
               style={styles.input}
-              placeholder="Nombre (opcional)"
+              placeholder="Nombre"
               value={name}
               onChangeText={setName}
               autoCapitalize="words"

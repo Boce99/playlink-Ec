@@ -138,7 +138,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name,
       });
       console.log("[AuthContext] Sign up result:", result);
+      
+      // Immediately fetch user session after signup
+      // Better Auth should automatically log in the user after signup
       await fetchUser();
+      
+      console.log("[AuthContext] User session after signup:", user ? "Logged in" : "Not logged in");
     } catch (error) {
       console.error("[AuthContext] Email sign up failed:", error);
       throw error;
