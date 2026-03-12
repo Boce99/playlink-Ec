@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "PlayLink Ec",
-    "slug": "playlink-ec",
+    "name": "Remix of PlayLink Ec",
+    "slug": "remix-of-playlink-ec",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/images/ChatGPT Image 6 \u043c\u0430\u0440. 2026 \u0433., 11_44_39.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/natively-dark.png",
+      "image": "./assets/images/ChatGPT Image 6 \u043c\u0430\u0440. 2026 \u0433., 11_44_39.png",
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
@@ -22,7 +22,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/natively-dark.png",
+        "foregroundImage": "./assets/images/ChatGPT Image 6 \u043c\u0430\u0440. 2026 \u0433., 11_44_39.png",
         "backgroundColor": "#000000"
       },
       "edgeToEdgeEnabled": true,
@@ -38,7 +38,7 @@
       "expo-router",
       "expo-web-browser"
     ],
-    "scheme": "playlinkec",
+    "scheme": "remixofplaylinkec",
     "experiments": {
       "typedRoutes": true
     },
