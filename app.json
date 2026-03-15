@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Remix of PlayLink Ec",
-    "slug": "remix-of-playlink-ec",
+    "name": "PlayLink Ec",
+    "slug": "playlink-ec",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/ChatGPT Image 6 \u043c\u0430\u0440. 2026 \u0433., 11_44_39.png",
@@ -38,7 +38,7 @@
       "expo-router",
       "expo-web-browser"
     ],
-    "scheme": "remixofplaylinkec",
+    "scheme": "playlinkec",
     "experiments": {
       "typedRoutes": true
     },
